@@ -23,7 +23,7 @@ QUIC Connection Migration Tester is a specialized diagnostic tool that helps det
 - [uv](https://docs.astral.sh/uv/)
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/stackia/quic-connection-migration-tester
 cd quic-connection-migration-tester
 uv sync
 ```
@@ -33,7 +33,7 @@ uv sync
 ### Basic Usage
 
 ```bash
-uv run main.py https://www.google.com
+uv run main.py https://http3check.net
 ```
 
 ### Advanced Options
