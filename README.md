@@ -77,7 +77,7 @@ uv run quic-migration-tester https://test-server.com --no-verify
 
 ```bash
 # Install with development dependencies
-uv sync --group dev
+uv sync --dev
 
 # Run code formatting
 uv run black .
