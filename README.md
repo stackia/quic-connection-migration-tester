@@ -1,5 +1,8 @@
 # QUIC Connection Migration Tester
 
+[![PyPI version](https://badge.fury.io/py/quic-migration-tester.svg)](https://badge.fury.io/py/quic-migration-tester)
+[![CI](https://github.com/stackia/quic-migration-tester/workflows/CI/badge.svg)](https://github.com/stackia/quic-migration-tester/actions)
+
 A Python tool for testing HTTP/3 websites' support for QUIC connection migration by analyzing connection parameters and simulating network changes.
 
 ## Overview
@@ -22,6 +25,16 @@ QUIC Connection Migration Tester is a specialized diagnostic tool that helps det
 - Python 3.13 or higher
 - [uv](https://docs.astral.sh/uv/)
 
+### Install from PyPI (Recommended)
+
+```bash
+# Using uv
+uv pip install quic-migration-tester
+
+# Or using pip
+pip install quic-migration-tester
+```
+
 ### Install from source
 
 ```bash
@@ -30,7 +43,7 @@ cd quic-migration-tester
 uv sync
 ```
 
-### Install as package
+### Install as package from local source
 
 ```bash
 # Install from local directory
