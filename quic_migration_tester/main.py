@@ -19,6 +19,8 @@ from aioquic.h3.connection import H3_ALPN
 from aioquic.quic.configuration import QuicConfiguration
 from aioquic.quic.logger import QuicLogger
 
+from . import __version__
+
 
 class ConnectionMigrationTester:
     def __init__(self, host: str, port: int, verify_mode: bool = True):
@@ -62,9 +64,7 @@ class ConnectionMigrationTester:
                 self.logger.info(f"Initial local address: {initial_local_addr}")
 
                 # Wait for server to send NEW_CONNECTION_ID frames
-                self.logger.info(
-                    "Waiting for server to provide additional connection IDs..."
-                )
+                self.logger.info("Waiting for server to provide additional connection IDs...")
                 for i in range(5):  # Wait up to 5 seconds
                     await asyncio.sleep(1.0)
                     peer_cids = quic_conn._peer_cid_available
@@ -80,12 +80,8 @@ class ConnectionMigrationTester:
 
                 # RFC9000 Section 5.1.1: Check connection ID management compliance
                 if len(peer_cids) > 0:
-                    self.logger.info(
-                        "Server supports connection ID management (RFC 9000 Section 5.1)"
-                    )
-                    self.logger.info(
-                        f"Available connection IDs for potential migration: {len(peer_cids)}"
-                    )
+                    self.logger.info("Server supports connection ID management (RFC 9000 Section 5.1)")
+                    self.logger.info(f"Available connection IDs for potential migration: {len(peer_cids)}")
                 else:
                     self.logger.warning("❌ No spare connection IDs available")
                     self.logger.warning("This limits connection migration capabilities")
@@ -105,17 +101,13 @@ class ConnectionMigrationTester:
                         self.logger.info(
                             f"Remote active_connection_id_limit: {transport_params["active_connection_id_limit"]}"
                         )
-                    self.logger.info(
-                        f"Remote disable_active_migration: {transport_params["disable_active_migration"]}"
-                    )
+                    self.logger.info(f"Remote disable_active_migration: {transport_params["disable_active_migration"]}")
                     if transport_params.get("max_idle_timeout") is not None:
                         self.logger.info(
                             f"Remote max_idle_timeout: {transport_params["max_idle_timeout"] / 1000} seconds"
                         )
                     if transport_params.get("disable_active_migration"):
-                        self.logger.warning(
-                            "⚠️ Server explicitly disabled active connection migration"
-                        )
+                        self.logger.warning("⚠️ Server explicitly disabled active connection migration")
 
                 # Record original state
                 original_cid = quic_conn._peer_cid.cid
@@ -128,25 +120,17 @@ class ConnectionMigrationTester:
                 if len(peer_cids) > 0:
                     self.logger.info("Available connection IDs for migration:")
                     for i, cid in enumerate(peer_cids):
-                        self.logger.info(
-                            f"  {i}: {cid.cid.hex()} (seq: {cid.sequence_number})"
-                        )
+                        self.logger.info(f"  {i}: {cid.cid.hex()} (seq: {cid.sequence_number})")
 
                 # Phase 2: Test network change simulation
                 migration_success = False
 
                 # Method 1: Simulate network change by changing local port
-                self.logger.info(
-                    "Phase 2: Simulating network change via local port change..."
-                )
+                self.logger.info("Phase 2: Simulating network change via local port change...")
                 try:
                     # Create a new socket with different local port
                     new_socket = socket.socket(
-                        (
-                            socket.AF_INET6
-                            if ":" in str(initial_local_addr[0])
-                            else socket.AF_INET
-                        ),
+                        (socket.AF_INET6 if ":" in str(initial_local_addr[0]) else socket.AF_INET),
                         socket.SOCK_DGRAM,
                     )
                     new_socket.bind(("", 0))  # Bind to any available port
@@ -157,9 +141,7 @@ class ConnectionMigrationTester:
                     loop = asyncio.get_event_loop()
                     if initial_transport is not None:
                         initial_transport.close()  # Close old transport
-                    await loop.create_datagram_endpoint(
-                        lambda: protocol, sock=new_socket
-                    )
+                    await loop.create_datagram_endpoint(lambda: protocol, sock=new_socket)
 
                     protocol.change_connection_id()
                     await asyncio.sleep(1.0)
@@ -169,14 +151,10 @@ class ConnectionMigrationTester:
                     # Test connection functionality after network change
                     try:
                         await asyncio.wait_for(protocol.ping(), timeout=5.0)
-                        self.logger.info(
-                            "Connection alive after network change simulation"
-                        )
+                        self.logger.info("Connection alive after network change simulation")
                         migration_success = True
                     except Exception:
-                        self.logger.warning(
-                            "Connection failed after network change: ping timeout"
-                        )
+                        self.logger.warning("Connection failed after network change: ping timeout")
 
                     path_challenge_event = next(
                         (
@@ -185,8 +163,7 @@ class ConnectionMigrationTester:
                             if e is not None
                             and e.get("name") == "transport:packet_received"
                             and any(
-                                frame.get("frame_type") == "path_challenge"
-                                for frame in e["data"].get("frames", [])
+                                frame.get("frame_type") == "path_challenge" for frame in e["data"].get("frames", [])
                             )
                         ),
                         None,
@@ -221,9 +198,7 @@ class ConnectionMigrationTester:
                 if str(connection_state) == "QuicConnectionState.CONNECTED":
                     self.logger.info("Connection remains in CONNECTED state")
                 else:
-                    self.logger.warning(
-                        f"⚠️ Connection state changed to: {connection_state}"
-                    )
+                    self.logger.warning(f"⚠️ Connection state changed to: {connection_state}")
 
                 # Final assessment
                 if migration_success:
@@ -238,18 +213,15 @@ class ConnectionMigrationTester:
             return False
 
 
-async def main():
+async def main() -> None:
     """Main function"""
     parser = argparse.ArgumentParser(
-        description="Test HTTP3 connection migration support"
+        description="Test HTTP3 connection migration support", prog="quic-migration-tester"
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("url", help="URL to test (e.g., https://www.google.com)")
-    parser.add_argument(
-        "--no-verify", action="store_true", help="Disable certificate verification"
-    )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose logging"
-    )
+    parser.add_argument("--no-verify", action="store_true", help="Disable certificate verification")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
 
@@ -267,9 +239,7 @@ async def main():
     port = parsed.port or 443
 
     # Create tester
-    tester = ConnectionMigrationTester(
-        host=host, port=port, verify_mode=not args.no_verify
-    )
+    tester = ConnectionMigrationTester(host=host, port=port, verify_mode=not args.no_verify)
 
     # Run test
     print(f"Testing connection migration support for {host}:{port}")
@@ -303,5 +273,10 @@ async def main():
         sys.exit(1)
 
 
-if __name__ == "__main__":
+def cli_main() -> None:
+    """Synchronous entry point for command line interface"""
     asyncio.run(main())
+
+
+if __name__ == "__main__":
+    cli_main()

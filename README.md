@@ -22,10 +22,23 @@ QUIC Connection Migration Tester is a specialized diagnostic tool that helps det
 - Python 3.13 or higher
 - [uv](https://docs.astral.sh/uv/)
 
+### Install from source
+
 ```bash
-git clone https://github.com/stackia/quic-connection-migration-tester
-cd quic-connection-migration-tester
+git clone https://github.com/stackia/quic-migration-tester
+cd quic-migration-tester
 uv sync
+```
+
+### Install as package
+
+```bash
+# Install from local directory
+uv pip install .
+
+# Or build and install wheel
+uv build
+uv pip install dist/quic_migration_tester-*.whl
 ```
 
 ## Usage
@@ -33,24 +46,61 @@ uv sync
 ### Basic Usage
 
 ```bash
-uv run main.py https://http3check.net
+# Run directly with uv
+uv run quic-migration-tester https://http3check.net
+
+# Or if installed as package
+quic-migration-tester https://http3check.net
 ```
 
 ### Advanced Options
 
 ```bash
 # Enable verbose logging for detailed diagnostics
-uv run main.py https://cloudflare.com --verbose
+uv run quic-migration-tester https://cloudflare.com --verbose
 
 # Disable certificate verification
-uv run main.py https://test-server.com --no-verify
+uv run quic-migration-tester https://test-server.com --no-verify
 ```
 
 ### Command Line Arguments
 
 - `url`: Target HTTPS URL to test (required)
+- `--version`: Show program version and exit
 - `--verbose, -v`: Enable verbose logging for detailed output
 - `--no-verify`: Disable TLS certificate verification
+- `--help, -h`: Show help message and exit
+
+## Development
+
+### Setup development environment
+
+```bash
+# Install with development dependencies
+uv sync --group dev
+
+# Run code formatting
+uv run black .
+uv run isort .
+
+# Run type checking
+uv run mypy .
+
+# Run linting
+uv run flake8 .
+```
+
+### Building
+
+```bash
+# Build source and wheel distributions
+uv build
+
+# The built packages will be in the dist/ directory
+ls dist/
+# quic_migration_tester-0.1.0.tar.gz
+# quic_migration_tester-0.1.0-py3-none-any.whl
+```
 
 ## How It Works
 

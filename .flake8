@@ -1,3 +1,14 @@
 [flake8]
 max-line-length = 120
 extend-ignore = E203,E701
+extend-exclude =
+    .venv,
+    .git,
+    __pycache__,
+    .mypy_cache,
+    .tox,
+    .nox,
+    dist,
+    build,
+    .eggs,
+    *.egg-info

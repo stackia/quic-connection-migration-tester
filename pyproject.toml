@@ -1,10 +1,104 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "h3test"
-version = "0.1.0"
-description = "Add your description here"
+name = "quic-migration-tester"
+dynamic = ["version"]
+description = "A Python tool for testing HTTP/3 websites' support for QUIC connection migration by analyzing connection parameters and simulating network changes."
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.13"
+authors = [{ name = "Stackie Jia", email = "jsq2627@gmail.com" }]
+maintainers = [{ name = "Stackie Jia", email = "jsq2627@gmail.com" }]
+keywords = [
+  "quic",
+  "http3",
+  "connection-migration",
+  "network-testing",
+  "protocol-testing",
+  "rfc9000",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: System :: Networking",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Utilities",
+]
 dependencies = ["aioquic>=1.2.0"]
 
+[dependency-groups]
+dev = ["black>=25.1.0", "flake8>=7.3.0", "isort>=6.0.1", "mypy>=1.16.1"]
+
+[project.urls]
+Homepage = "https://github.com/stackia/quic-migration-tester"
+Repository = "https://github.com/stackia/quic-migration-tester"
+Issues = "https://github.com/stackia/quic-migration-tester/issues"
+Documentation = "https://github.com/stackia/quic-migration-tester#readme"
+
+[project.scripts]
+quic-migration-tester = "quic_migration_tester.main:cli_main"
+
+# Black configuration
+[tool.black]
+line-length = 120
+target-version = ["py313"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
 [tool.isort]
 profile = "black"
+multi_line_output = 3
+line_length = 120
+force_sort_within_sections = true
+combine_as_imports = true
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+# Hatch configuration
+[tool.hatch.version]
+path = "quic_migration_tester/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["/quic_migration_tester", "/README.md", "/LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["quic_migration_tester"]
